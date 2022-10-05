@@ -46,6 +46,19 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL
+  res.redirect("/urls")
+
+  console.log(req.body.longURL)
+})
+ 
+app.post("/urls/:id/delete", (req, res) => {
+ console.log(req.params.id)
+ delete urlDatabase[req.params.id]
+ res.redirect("/urls")
+ });
+
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
