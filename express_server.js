@@ -10,6 +10,19 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+//global object
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
 
 function generateRandomString() {
   let result = ""
@@ -28,10 +41,10 @@ app.listen(PORT, () => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(":::::", req.cookies.username)
   const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index",templateVars)
 });
+
 app.post("/urls", (req, res) => {
   const shortUrl = generateRandomString()
   urlDatabase[shortUrl] = req.body["longURL"]
@@ -62,9 +75,21 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email
   const password = req.body.password
-  res.cookie("email","password")
-  // res.redirect("/urls")
-});
+  const randomUserId = generateRandomString()
+  //create a new user object
+  const newUser = {
+    id: randomUserId,
+    email: email,
+    password: password
+  }
+  //add a new user object to the global user object
+  users[randomUserId] = newUser
+  //set the cookie to the user id
+  res.cookie("userID", newUser.id )
+  //redirect
+  res.redirect("/urls")
+})
+
 
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL
