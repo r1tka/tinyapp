@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
+const cookieParser = require('cookie-parser')
 
 app.set("view engine", "ejs");
 
@@ -18,8 +19,12 @@ function generateRandomString() {
   }  
   return result; 
 }
-console.log(generateRandomString())
+
 app.use(express.urlencoded({ extended: true }));
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
@@ -49,15 +54,20 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL
   res.redirect("/urls")
-
   console.log(req.body.longURL)
 })
  
 app.post("/urls/:id/delete", (req, res) => {
- console.log(req.params.id)
  delete urlDatabase[req.params.id]
  res.redirect("/urls")
  });
+
+ app.post("/login", (req, res) => {
+  const login = req.body.username
+  res.cookie("username", login)
+  res.redirect("/urls")
+
+})
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
@@ -68,6 +78,4 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
+
