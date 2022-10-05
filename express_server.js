@@ -54,6 +54,18 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/register", (req, res) => {
+  const templateVars = {username: undefined}
+  res.render("register",templateVars);
+});
+
+app.post("/register", (req, res) => {
+  const email = req.body.email
+  const password = req.body.password
+  res.cookie("email","password")
+  // res.redirect("/urls")
+});
+
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL
   res.redirect("/urls")
@@ -83,5 +95,6 @@ app.get("/hello", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
+
 
 
