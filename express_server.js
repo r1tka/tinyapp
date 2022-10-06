@@ -125,10 +125,14 @@ app.post("/urls/:id/delete", (req, res) => {
 
  app.post("/login", (req, res) => {
   const email = req.body.email
-  console.log(":::::",email)
   const password = req.body.password
   const user = getUserByEmail(email)
-  console.log(":::::",user)
+  if(!user) {
+    res.status(403).send("User with this email cannot be found")
+  }
+  if (user.password !== password) {
+    res.status(403).send("Wrong password")
+  }
   res.cookie("user_id",user.id)
   res.redirect("/urls")
 });

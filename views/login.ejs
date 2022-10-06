@@ -13,9 +13,9 @@
   <body>
 
     <%- include('partials/_header') %>
-    <main style="margin: 5em;">
-      <h2><b>Login</b></h2>
-      <form class="form-group" action='/login' method="POST">
+   
+    <form style="margin: 1em;" class="form-group" action='/login' method="POST">
+        <h4><b>Login</b></h4>
         <div class="form-group">
           <label for="email">Email address</label>
           <input class="form-control" type="email" name="email" placeholder="Enter email" style="width: 300px; margin: 0m">
@@ -28,4 +28,4 @@
           <button type="submit" class="btn btn-primary">Login</button>
         </div>
       </form>
-    </main>
+    
