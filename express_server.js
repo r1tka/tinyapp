@@ -80,14 +80,18 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = {user: undefined}
+  let templateVars = {user: undefined}
+  const userId = req.cookies.user_id
+  if (userId) {
+    res.redirect("/urls")
+    return 
+  } 
   res.render("register",templateVars);
 });
 
 app.post("/register", (req, res) => {
   const email = req.body.email
   const password = req.body.password
-  const randomUserId = generateRandomString()
   if (email === "" || password === "") {
     res.status(400).send("Please include your information")
   }
@@ -95,6 +99,7 @@ app.post("/register", (req, res) => {
   res.status(400).send("Sorry, this email is already in use!")
   }
   //create a new user object
+  let randomUserId = generateRandomString()
   const newUser = {
     id: randomUserId,
     email: email,
@@ -119,7 +124,12 @@ app.post("/urls/:id/delete", (req, res) => {
  });
 
  app.get("/login", (req, res) => {
-  const templateVars = {user: undefined}
+  templateVars = {user: undefined}
+  const userId = req.cookies.user_id
+  if (userId) {
+    res.redirect("/urls")
+    return 
+  } 
   res.render("login",templateVars);
 });
 
