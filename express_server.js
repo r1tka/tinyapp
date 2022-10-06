@@ -34,6 +34,16 @@ function generateRandomString() {
   return result; 
 }
 
+function getUserByEmail(email) {
+for (let userId in users) {
+  if(users[userId].email === email) {
+    return users[userId].email
+  } 
+}
+console.log("::::::",users[userId].email)
+   return null
+ }
+
 app.use(express.urlencoded({ extended: true }));
 
 app.listen(PORT, () => {
@@ -79,6 +89,13 @@ app.post("/register", (req, res) => {
   const email = req.body.email
   const password = req.body.password
   const randomUserId = generateRandomString()
+  if (email === "" || password === "") {
+    res.status(400).send("Please include your information")
+  }
+  if (getUserByEmail)   
+  res.status(400).send("Sorry, this email is already in use!")
+  
+
   //create a new user object
   const newUser = {
     id: randomUserId,
@@ -96,7 +113,6 @@ app.post("/register", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL
   res.redirect("/urls")
-  console.log(req.body.longURL)
 })
  
 app.post("/urls/:id/delete", (req, res) => {
