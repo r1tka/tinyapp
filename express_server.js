@@ -56,6 +56,10 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  const userId = req.cookies.user_id
+  if (!userId) {
+    res.send("Log in first!")
+  }
   const shortUrl = generateRandomString()
   urlDatabase[shortUrl] = req.body["longURL"]
   console.log(req.body); // Log the POST request body to the console
@@ -64,13 +68,20 @@ app.post("/urls", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id]
+  if(!longURL) {
+    res.status(404).send("Not found!")
+  }
   res.redirect(longURL);
 });
 
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies.user_id
-  const templateVars = { user: users[userId] };
-  res.render("urls_new", templateVars);
+  if (userId) {
+    const templateVars = { user: users[userId] };
+    res.render("urls_new", templateVars);
+  } else {
+  res.redirect("/login");
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -84,9 +95,9 @@ app.get("/register", (req, res) => {
   const userId = req.cookies.user_id
   if (userId) {
     res.redirect("/urls")
-    return 
-  } 
+  } else {
   res.render("register",templateVars);
+  }
 });
 
 app.post("/register", (req, res) => {
@@ -128,12 +139,13 @@ app.post("/urls/:id/delete", (req, res) => {
   const userId = req.cookies.user_id
   if (userId) {
     res.redirect("/urls")
-    return 
-  } 
-  res.render("login",templateVars);
+   } else {
+    res.render("login",templateVars);
+  }
 });
 
  app.post("/login", (req, res) => {
+  const userId = req.cookies.user_id
   const email = req.body.email
   const password = req.body.password
   const user = getUserByEmail(email)
