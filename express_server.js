@@ -7,9 +7,19 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
 //global object
 const users = {
   userRandomID: {
@@ -61,13 +71,13 @@ app.post("/urls", (req, res) => {
     res.send("Log in first!")
   }
   const shortUrl = generateRandomString()
-  urlDatabase[shortUrl] = req.body["longURL"]
+  urlDatabase[shortUrl].longURL = req.body["longURL"]
   console.log(req.body); // Log the POST request body to the console
   res.redirect(`urls/${shortUrl}`); 
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id]
+  const longURL = urlDatabase[req.params.id].longURL
   if(!longURL) {
     res.status(404).send("Not found!")
   }
@@ -86,7 +96,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const userId = req.cookies.user_id
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], user: users[userId]};
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[userId]};
   res.render("urls_show", templateVars);
 });
 
@@ -125,12 +135,13 @@ app.post("/register", (req, res) => {
 })
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL
+  urlDatabase[req.params.id].longURL = req.body.longURL
   res.redirect("/urls")
 })
  
 app.post("/urls/:id/delete", (req, res) => {
- delete urlDatabase[req.params.id]
+  console.log('1', req.params.id)
+ delete urlDatabase[req.params.id]?.longURL
  res.redirect("/urls")
  });
 
