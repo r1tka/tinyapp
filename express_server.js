@@ -41,7 +41,8 @@ app.listen(PORT, () => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const userId = req.cookies.user_id
+  const templateVars = { urls: urlDatabase, user: users[userId] };
   res.render("urls_index",templateVars)
 });
 
@@ -58,17 +59,19 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {username:req.cookies["username"] };
+  const userId = req.cookies.user_id
+  const templateVars = { user: users[userId] };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies["username"]};
+  const userId = req.cookies.user_id
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], user: users[userId]};
   res.render("urls_show", templateVars);
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = {username: undefined}
+  const templateVars = {user: undefined}
   res.render("register",templateVars);
 });
 
@@ -85,11 +88,10 @@ app.post("/register", (req, res) => {
   //add a new user object to the global user object
   users[randomUserId] = newUser
   //set the cookie to the user id
-  res.cookie("userID", newUser.id )
+  res.cookie("user_id", newUser.id )
   //redirect
   res.redirect("/urls")
 })
-
 
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL
@@ -109,7 +111,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username")
+  res.clearCookie("user_id")
   res.redirect("/urls")
 });
 app.get("/hello", (req, res) => {
