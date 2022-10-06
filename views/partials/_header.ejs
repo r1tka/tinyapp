@@ -17,20 +17,18 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <a class="nav-item nav-link" href="/login">Log in</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
+
      </div class="form-control">
     </div>
-  
+       
     <% if (user) { %>
       <h5>Logged in as: <%= user.email %>  </h5>
       <form class="form-inline" action='logout' method="POST">
         <button type="submit" class="btn btn-outline-dark">logout</button>
       </form>
-    <% } else { %>
-      <form class="form-inline" action='login' method="POST">
-        <input class="form-inline" name="username" placeholder="username" type="text"></input>
-        <button type="submit" class="btn btn-outline-dark">Log in</button>
-      </form>
-   <% } %>
+    <% }   %>
    
   </nav>
 </header>

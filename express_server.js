@@ -37,10 +37,9 @@ function generateRandomString() {
 function getUserByEmail(email) {
 for (let userId in users) {
   if(users[userId].email === email) {
-    return users[userId].email
+    return users[userId]
   } 
 }
-console.log("::::::",users[userId].email)
    return null
  }
 
@@ -92,10 +91,9 @@ app.post("/register", (req, res) => {
   if (email === "" || password === "") {
     res.status(400).send("Please include your information")
   }
-  if (getUserByEmail)   
+  if (getUserByEmail(email))  { 
   res.status(400).send("Sorry, this email is already in use!")
-  
-
+  }
   //create a new user object
   const newUser = {
     id: randomUserId,
@@ -120,9 +118,18 @@ app.post("/urls/:id/delete", (req, res) => {
  res.redirect("/urls")
  });
 
+ app.get("/login", (req, res) => {
+  const templateVars = {user: undefined}
+  res.render("login",templateVars);
+});
+
  app.post("/login", (req, res) => {
-  const login = req.body.username
-  res.cookie("username", login)
+  const email = req.body.email
+  console.log(":::::",email)
+  const password = req.body.password
+  const user = getUserByEmail(email)
+  console.log(":::::",user)
+  res.cookie("user_id",user.id)
   res.redirect("/urls")
 });
 
