@@ -1,12 +1,11 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080; 
 const bcrypt = require("bcryptjs");
-// var cookieSession = require('cookie-session')
+const { getUserByEmail } = require('./helpers')
 const cookieSession = require('cookie-session')
 
 app.set("view engine", "ejs");
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['qwertasknxkcoiwokjsadkjhsad']
@@ -50,14 +49,14 @@ const users = {
   },
 };
  
-function getUserByEmail(email) {
-  for (let userId in users) {
-    if(users[userId].email === email) {
-      return users[userId]
-    } 
-  }
-     return null
-   }
+// function getUserByEmail(email, users) {
+//   for (let userId in users) {
+//     if(users[userId].email === email) {
+//       return users[userId]
+//     } 
+//   }
+//      return null
+//    }
 
 function generateRandomString() {
   let result = ""
@@ -139,11 +138,12 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email
   const password = req.body.password
-  const hashedPassword = bcrypt.hashSync(password,10); ////****/////
+  const hashedPassword = bcrypt.hashSync(password,10);
+  const user = getUserByEmail(email, users) ////****/////
   if (email === "" || password === "") {
     res.status(400).send("Please include your information")
   }
-  if (getUserByEmail(email))  { 
+  if (user) { // check if email is exist
   res.status(400).send("Sorry, this email is already in use!")
   }
   //create a new user object
@@ -210,8 +210,7 @@ app.post("/urls/:id/delete", (req, res) => {
   const userId = req.session.user_id
   const email = req.body.email
   const password = req.body.password
-  const user = getUserByEmail(email)
-  console.log(":::", user.password)
+  const user = getUserByEmail(email, users); // existing user
   if(!user) {
     res.status(403).send("User with this email cannot be found")
   }
