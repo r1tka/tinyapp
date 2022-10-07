@@ -9,13 +9,23 @@ app.use(cookieParser());
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
+    userID: "userRandomID",
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
-    userID: "aJ48lW",
+    userID: "user2RandomID",
   },
 };
+ const urlsForUser = function(id) {
+  let filterUrlDatabase = {}
+  
+for (let key in urlDatabase) {
+  if(urlDatabase[key].userID === id ) {
+    filterUrlDatabase = {...filterUrlDatabase,[key]:urlDatabase[key]}
+  }
+ }
+ return filterUrlDatabase
+ }
 // const urlDatabase = {
 //   "b2xVn2": "http://www.lighthouselabs.ca",
 //   "9sm5xK": "http://www.google.com"
@@ -33,6 +43,15 @@ const users = {
     password: "dishwasher-funk",
   },
 };
+ 
+function getUserByEmail(email) {
+  for (let userId in users) {
+    if(users[userId].email === email) {
+      return users[userId]
+    } 
+  }
+     return null
+   }
 
 function generateRandomString() {
   let result = ""
@@ -44,14 +63,7 @@ function generateRandomString() {
   return result; 
 }
 
-function getUserByEmail(email) {
-for (let userId in users) {
-  if(users[userId].email === email) {
-    return users[userId]
-  } 
-}
-   return null
- }
+
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -61,7 +73,11 @@ app.listen(PORT, () => {
 
 app.get("/urls", (req, res) => {
   const userId = req.cookies.user_id
-  const templateVars = { urls: urlDatabase, user: users[userId] };
+  const filterUrlDatabase = urlsForUser(userId)
+  const templateVars = { urls: filterUrlDatabase, user: users[userId] };
+  if(!userId) {
+    res.send("Log in please!")
+  }
   res.render("urls_index",templateVars)
 });
 
@@ -96,8 +112,12 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const userId = req.cookies.user_id
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[userId]};
-  res.render("urls_show", templateVars);
+  if (urlsForUser(userId)) {
+    const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[userId]};
+    res.render("urls_show", templateVars)
+  } else {
+    res.redirect("/urls")
+  }
 });
 
 app.get("/register", (req, res) => {
@@ -182,6 +202,3 @@ app.get("/hello", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
-
-
-
