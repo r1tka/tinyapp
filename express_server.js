@@ -16,14 +16,14 @@ const urlDatabase = {
     userID: "user2RandomID",
   },
 };
- const urlsForUser = function(id) {
+ const urlsForUser = function(userId) {
   let filterUrlDatabase = {}
   
-for (let key in urlDatabase) {
-  if(urlDatabase[key].userID === id ) {
-    filterUrlDatabase = {...filterUrlDatabase,[key]:urlDatabase[key]}
-  }
- }
+  for (let key in urlDatabase) {
+    if (urlDatabase[key].userID === userId ) {
+      filterUrlDatabase = {...filterUrlDatabase, [key]: urlDatabase[key]}
+    }
+   }
  return filterUrlDatabase
  }
 // const urlDatabase = {
@@ -75,9 +75,9 @@ app.get("/urls", (req, res) => {
   const userId = req.cookies.user_id
   const filterUrlDatabase = urlsForUser(userId)
   const templateVars = { urls: filterUrlDatabase, user: users[userId] };
-  if(!userId) {
-    res.send("Log in please!")
-  }
+  // if(!userId) {
+  //   res.send("Log in please!")
+  // }
   res.render("urls_index",templateVars)
 });
 
@@ -87,8 +87,8 @@ app.post("/urls", (req, res) => {
     res.send("Log in first!")
   }
   const shortUrl = generateRandomString()
-  urlDatabase[shortUrl].longURL = req.body["longURL"]
-  console.log(req.body); // Log the POST request body to the console
+  const newUrl = {longURL: req.body["longURL"], userID: userId}
+  urlDatabase[shortUrl] = newUrl
   res.redirect(`urls/${shortUrl}`); 
 });
 
@@ -155,14 +155,37 @@ app.post("/register", (req, res) => {
 })
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id].longURL = req.body.longURL
-  res.redirect("/urls")
+  const userId = req.cookies.user_id
+  let myDatabase = urlsForUser(userId)
+
+  if (!userId) {
+    res.send("You have to log in!")
+  } else if (!urlDatabase[req.params.id]) {
+    res.send("This url doesn't exist")
+  } else if (!myDatabase[req.params.id]) {
+    res.send("You don't own this url")
+  } else {
+    urlDatabase[req.params.id].longURL = req.body.longURL
+    res.redirect("/urls")
+  }
 })
  
 app.post("/urls/:id/delete", (req, res) => {
-  console.log('1', req.params.id)
- delete urlDatabase[req.params.id]?.longURL
- res.redirect("/urls")
+  const userId = req.cookies.user_id
+  let myDatabase = urlsForUser(userId)
+  const shortUrl = req.params.id
+
+
+  if (!userId) {
+    res.send("You have to log in!")
+  } else if (!urlDatabase[req.params.id]) {
+    res.send("This url doesn't exist")
+  } else if (!myDatabase[req.params.id]) {
+    res.send("You don't own this url")
+  } else {
+     delete urlDatabase[req.params.id]
+     res.redirect("/urls")
+  }
  });
 
  app.get("/login", (req, res) => {
@@ -194,6 +217,7 @@ app.post("/logout", (req, res) => {
   res.clearCookie("user_id")
   res.redirect("/urls")
 });
+
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
