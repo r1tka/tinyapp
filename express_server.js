@@ -2,10 +2,15 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
-const cookieParser = require('cookie-parser')
+// var cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session')
 
 app.set("view engine", "ejs");
-app.use(cookieParser());
+// app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['qwertasknxkcoiwokjsadkjhsad']
+}));
 
 const urlDatabase = {
   b6UTxQ: {
@@ -73,7 +78,7 @@ app.listen(PORT, () => {
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   const filterUrlDatabase = urlsForUser(userId)
   const templateVars = { urls: filterUrlDatabase, user: users[userId] };
   // if(!userId) {
@@ -83,7 +88,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   if (!userId) {
     res.send("Log in first!")
   }
@@ -102,7 +107,7 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   if (userId) {
     const templateVars = { user: users[userId] };
     res.render("urls_new", templateVars);
@@ -112,7 +117,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   if (urlsForUser(userId)) {
     const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[userId]};
     res.render("urls_show", templateVars)
@@ -123,7 +128,7 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/register", (req, res) => {
   let templateVars = {user: undefined}
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   if (userId) {
     res.redirect("/urls")
   } else {
@@ -151,13 +156,14 @@ app.post("/register", (req, res) => {
   //add a new user object to the global user object
   users[randomUserId] = newUser
   //set the cookie to the user id
-  res.cookie("user_id", newUser.id )
+  // res.cookie("user_id", newUser.id )
+  req.session.user_id = newUser.id
   //redirect
   res.redirect("/urls")
 })
 
 app.post("/urls/:id", (req, res) => {
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   let myDatabase = urlsForUser(userId)
 
   if (!userId) {
@@ -173,7 +179,7 @@ app.post("/urls/:id", (req, res) => {
 })
  
 app.post("/urls/:id/delete", (req, res) => {
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   let myDatabase = urlsForUser(userId)
   const shortUrl = req.params.id
 
@@ -192,7 +198,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
  app.get("/login", (req, res) => {
   templateVars = {user: undefined}
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   if (userId) {
     res.redirect("/urls")
    } else {
@@ -201,7 +207,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
  app.post("/login", (req, res) => {
-  const userId = req.cookies.user_id
+  const userId = req.session.user_id
   const email = req.body.email
   const password = req.body.password
   const user = getUserByEmail(email)
@@ -212,12 +218,13 @@ app.post("/urls/:id/delete", (req, res) => {
   if (!bcrypt.compareSync(password, user.password)) {
     res.status(403).send("Wrong password")
   }
-  res.cookie("user_id",user.id)
+  // res.cookie("user_id",user.id)
+  req.session.user_id = user.id
   res.redirect("/urls")
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id")
+  req.session.user_id = null
   res.redirect("/urls")
 });
 
