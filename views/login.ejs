@@ -6,26 +6,24 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-
     <title>Login - TinyApp</title>
   </head>
-
   <body>
-
     <%- include('partials/_header') %>
-   
     <form style="margin: 1em;" class="form-group" action='/login' method="POST">
-        <h4><b>Login</b></h4>
-        <div class="form-group">
-          <label for="email">Email address</label>
-          <input class="form-control" type="email" name="email" placeholder="Enter email" style="width: 300px; margin: 0m">
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input class="form-control" type="password" name="password" placeholder="Password" style="width: 300px; margin: 0em">
-        </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary">Login</button>
-        </div>
-      </form>
+      <h4><b>Login</b></h4>
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input class="form-control" type="email" name="email" placeholder="Enter email" style="width: 300px; margin: 0m">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input class="form-control" type="password" name="password" placeholder="Password" style="width: 300px; margin: 0em">
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Login</button>
+      </div>
+    </form>
+  </body>
+</html>
     
